@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Craft Skills Grid — Atlan</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=Geist+Mono:wght@400;500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f7f5f2;
+  --surface: #ffffff;
+  --surface2: #f0ede8;
+  --border: #e0dbd3;
+  --border2: #ccc8c0;
+  --text: #1a1916;
+  --text2: #5c574f;
+  --text3: #9c968e;
+  --accent: #d4511e;
+  --accent2: #b8421a;
+  --accent-light: #fff0eb;
+  --accent-border: #f5c4ae;
+  --level-w: 200px;
+}
+body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+
+/* HEADER */
+header { display: flex; align-items: center; padding: 16px 36px; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 0; z-index: 100; gap: 12px; box-shadow: 0 1px 0 var(--border); }
+.wordmark-main { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 300; color: var(--text); letter-spacing: -0.01em; }
+.wordmark-main span { font-style: italic; color: var(--accent); }
+.wordmark-sub { font-family: 'Geist Mono', monospace; font-size: 10px; color: var(--text3); letter-spacing: 0.12em; text-transform: uppercase; }
+
+/* LAYOUT */
+.app { display: grid; grid-template-columns: 360px 1fr; min-height: calc(100vh - 53px); }
+
+/* SIDEBAR */
+.sidebar { border-right: 1px solid var(--border); padding: 28px 26px 40px; overflow-y: auto; background: var(--surface); }
+.sidebar-title { font-family: 'Fraunces', serif; font-size: 21px; font-weight: 300; line-height: 1.2; margin-bottom: 5px; }
+.sidebar-title em { font-style: italic; color: var(--accent); }
+.sidebar-desc { font-size: 12px; color: var(--text2); line-height: 1.6; margin-bottom: 24px; }
+
+.field-group { margin-bottom: 18px; }
+.field-label { display: block; font-family: 'Geist Mono', monospace; font-size: 10px; color: var(--text3); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 7px; }
+
+input[type="text"], textarea {
+  width: 100%; font-family: 'Geist', sans-serif; font-size: 13px;
+  padding: 9px 12px; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 7px; color: var(--text); outline: none; transition: border-color 0.15s, background 0.15s;
+}
+input[type="text"]:focus, textarea:focus { border-color: var(--accent); background: var(--surface); box-shadow: 0 0 0 3px var(--accent-light); }
+input[type="text"]::placeholder, textarea::placeholder { color: var(--text3); }
+textarea { resize: vertical; line-height: 1.55; }
+
+.divider { border: none; border-top: 1px solid var(--border); margin: 22px 0; }
+
+/* MODE TOGGLE */
+.mode-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 16px; }
+.mode-btn {
+  padding: 9px 8px; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 7px; color: var(--text2); font-family: 'Geist', sans-serif;
+  font-size: 11.5px; font-weight: 500; cursor: pointer; text-align: center;
+  transition: all 0.15s; line-height: 1.3;
+}
+.mode-btn:hover { border-color: var(--border2); color: var(--text); background: var(--surface2); }
+.mode-btn.active { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
+.mode-btn .mode-icon { display: block; font-size: 16px; margin-bottom: 3px; }
+
+/* JD PANEL */
+.jd-panel { display: none; }
+.jd-panel.visible { display: block; }
+.suggest-btn {
+  width: 100%; padding: 10px; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 7px; color: var(--text2); font-family: 'Geist', sans-serif; font-size: 12.5px;
+  font-weight: 500; cursor: pointer; transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 10px;
+}
+.suggest-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.suggest-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.suggest-spinner { width: 12px; height: 12px; border: 1.5px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.65s linear infinite; display: none; }
+.suggest-note { font-size: 11px; color: var(--text3); margin-top: 8px; line-height: 1.5; }
+
+/* COMPETENCIES */
+.comp-section-label {
+  font-family: 'Geist Mono', monospace; font-size: 10px; color: var(--text3);
+  letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.comp-count { font-size: 10px; color: var(--text3); }
+.comp-count.ok { color: var(--accent); }
+
+.competencies-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.comp-row { display: flex; gap: 6px; align-items: flex-start; }
+.comp-input-wrap { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.comp-desc-input { font-size: 11.5px !important; min-height: 50px !important; color: var(--text2) !important; }
+.comp-remove {
+  width: 28px; height: 36px; flex-shrink: 0; background: none;
+  border: 1px solid var(--border); border-radius: 7px; color: var(--text3);
+  cursor: pointer; font-size: 16px; transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.comp-remove:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.add-comp-btn {
+  width: 100%; padding: 8px; background: none; border: 1px dashed var(--border2);
+  border-radius: 7px; color: var(--text3); font-family: 'Geist', sans-serif;
+  font-size: 11.5px; cursor: pointer; transition: all 0.15s;
+}
+.add-comp-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+/* LEVELS */
+.levels-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.level-check {
+  display: flex; align-items: center; gap: 6px; padding: 8px 9px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 7px;
+  cursor: pointer; transition: all 0.15s; user-select: none;
+}
+.level-check:hover { border-color: var(--border2); background: var(--surface2); }
+.level-check.selected { border-color: var(--accent); background: var(--accent-light); }
+.level-check input { display: none; }
+.level-label { font-family: 'Geist Mono', monospace; font-size: 11px; font-weight: 500; color: var(--text2); }
+.level-check.selected .level-label { color: var(--accent); }
+
+/* GENERATE BTN */
+.generate-btn {
+  width: 100%; padding: 13px; background: var(--accent); color: white;
+  border: none; border-radius: 8px; font-family: 'Geist', sans-serif;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  box-shadow: 0 2px 8px rgba(212,81,30,0.25);
+}
+.generate-btn:hover { background: var(--accent2); }
+.generate-btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+.spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.4); border-top-color: white; border-radius: 50%; animation: spin 0.65s linear infinite; display: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.error-msg { padding: 10px 12px; background: #fff0eb; border: 1px solid var(--accent-border); border-radius: 7px; font-size: 12px; color: var(--accent2); line-height: 1.5; margin-top: 12px; display: none; }
+
+/* MAIN */
+.main { overflow: auto; background: var(--bg); }
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text3); gap: 12px; padding: 40px; text-align: center; }
+.empty-glyph { font-family: 'Fraunces', serif; font-size: 72px; font-weight: 300; font-style: italic; color: var(--border2); line-height: 1; }
+.empty-label { font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); }
+
+/* GRID */
+.grid-wrap { padding: 32px 36px 60px; min-width: max-content; animation: fadeIn 0.3s ease both; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.grid-eyebrow { font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+.grid-title { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 300; letter-spacing: -0.02em; color: var(--text); }
+.grid-title em { font-style: italic; color: var(--accent); }
+.grid-subtitle { font-size: 13px; color: var(--text2); margin-top: 5px; margin-bottom: 24px; }
+
+.craft-grid { border-collapse: collapse; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+
+.th-competency { width: 190px; min-width: 190px; padding: 14px 16px; text-align: left; background: var(--surface2); border: 1px solid var(--border); }
+.th-competency-label { font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); }
+
+.th-level { min-width: var(--level-w); padding: 13px 16px; text-align: left; background: var(--surface); border: 1px solid var(--border); }
+.th-level-code { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 300; font-style: italic; color: var(--accent); line-height: 1; margin-bottom: 2px; }
+.th-level-name { font-size: 11px; color: var(--text3); line-height: 1.3; }
+
+.td-competency { padding: 16px; border: 1px solid var(--border); vertical-align: top; background: var(--surface2); width: 190px; min-width: 190px; }
+.comp-name { font-weight: 600; font-size: 13px; color: var(--text); margin-bottom: 3px; line-height: 1.3; }
+.comp-hint { font-size: 11px; color: var(--text3); line-height: 1.5; }
+
+.td-cell { padding: 15px 16px; border: 1px solid var(--border); vertical-align: top; min-width: var(--level-w); background: var(--surface); transition: background 0.12s; }
+.td-cell:hover { background: #fdfcfa; }
+.cell-text { font-size: 12.5px; color: var(--text2); line-height: 1.75; }
+.cell-loading { display: flex; align-items: center; gap: 8px; color: var(--text3); font-size: 12px; }
+.cell-spinner { width: 12px; height: 12px; border: 1.5px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.65s linear infinite; }
+
+.grid-actions { display: flex; gap: 10px; margin-top: 18px; }
+.btn-ghost { padding: 8px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 7px; font-family: 'Geist', sans-serif; font-size: 12px; color: var(--text2); cursor: pointer; transition: all 0.15s; }
+.btn-ghost:hover { border-color: var(--border2); color: var(--text); background: var(--surface2); }
+
+@media print {
+  header, .sidebar, .grid-actions { display: none !important; }
+  .app { display: block; }
+  .main { overflow: visible; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wordmark-main">Atlan <span>Craft</span></div>
+  <div class="wordmark-sub">Skills Grid Generator</div>
+</header>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-title">Build a <em>Craft Skills</em> Grid</div>
+    <p class="sidebar-desc">Define the 3–5 competencies unique to this function — on top of Atlan's core grid. The tool writes per-level descriptions.</p>
+
+    <div class="field-group">
+      <label class="field-label">Function / Team</label>
+      <input type="text" id="fnInput" placeholder="e.g. Customer Success Manager" />
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Context <span style="text-transform:none;letter-spacing:0;font-size:9px">(optional)</span></label>
+      <textarea id="ctxInput" style="min-height:60px" placeholder="Scope, customer segment, stage of company, etc…"></textarea>
+    </div>
+
+    <hr class="divider">
+
+    <label class="field-label">Competency source</label>
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="modeOwnBtn" onclick="setMode('own')">
+        <span class="mode-icon">✏️</span>I'll define them
+      </button>
+      <button class="mode-btn" id="modeJdBtn" onclick="setMode('jd')">
+        <span class="mode-icon">📄</span>Generate from JD
+      </button>
+    </div>
+
+    <!-- JD PANEL -->
+    <div class="jd-panel" id="jdPanel">
+      <div class="field-group">
+        <label class="field-label">Paste job description</label>
+        <textarea id="jdInput" style="min-height:130px" placeholder="Paste the full job description here…"></textarea>
+      </div>
+      <button class="suggest-btn" id="suggestBtn" onclick="suggestComps()">
+        <div class="suggest-spinner" id="suggestSpinner"></div>
+        <span id="suggestBtnText">✦ Suggest competencies from JD</span>
+      </button>
+      <p class="suggest-note">Suggestions will appear below — review and edit before generating the grid.</p>
+    </div>
+
+    <!-- COMPETENCIES LIST (always visible) -->
+    <div id="selfPanel" style="margin-top:16px">
+      <div class="comp-section-label">
+        <span>Craft Competencies</span>
+        <span class="comp-count" id="compCount">0 / 5</span>
+      </div>
+      <div class="competencies-list" id="compList"></div>
+      <button class="add-comp-btn" onclick="addComp('','')">+ Add competency</button>
+    </div>
+
+    <hr class="divider">
+
+    <div class="field-group">
+      <label class="field-label">Levels to include</label>
+      <div class="levels-grid" id="levelsGrid"></div>
+    </div>
+
+    <hr class="divider">
+
+    <button class="generate-btn" id="genBtn" onclick="generate()">
+      <div class="spinner" id="spinner"></div>
+      <span id="btnText">Generate Grid</span>
+    </button>
+    <div class="error-msg" id="errorMsg"></div>
+  </aside>
+
+  <main class="main" id="mainArea">
+    <div class="empty-state">
+      <div class="empty-glyph">cf.</div>
+      <div class="empty-label">Define competencies to get started</div>
+    </div>
+  </main>
+</div>
+
+<script>
+const ALL_LEVELS = [
+  {code:'P1',name:'Associate'},{code:'P2',name:'Sr Associate'},{code:'P3',name:'Mid-level IC'},
+  {code:'P4',name:'Senior IC'},{code:'P5',name:'Lead / Staff'},{code:'P6',name:'Principal'},
+  {code:'M2',name:'Team Lead'},{code:'M3',name:'Manager'},{code:'M4',name:'Sr Manager'},
+  {code:'M5',name:'Director'},{code:'M6',name:'Head of'},{code:'E1',name:'VP'},
+];
+const LEVEL_CTX = {
+  P1:'Early career. Learning fundamentals, requires close guidance.',
+  P2:'Coachable contributor. Handles scoped work with guidance, building confidence.',
+  P3:'Reliable IC. Increasing ownership and initiative, operates independently on defined tasks.',
+  P4:'Senior IC. Independently owns meaningful projects, trusted to deliver.',
+  P5:'Lead/Staff. High-impact cross-functional work, influences team direction.',
+  P6:'Principal. Domain master, shapes strategy and execution at scale.',
+  M2:'Team Lead (player-coach). Leads small sub-team while contributing individually.',
+  M3:'Manager. Dedicated leader of a sub-team, owns performance and development.',
+  M4:'Sr Manager. Leads other managers and multiple sub-teams.',
+  M5:'Director. Multi-team scope, cross-functional alignment.',
+  M6:'Head of. Director-level scope plus material adjacency.',
+  E1:'VP. Leads major area of business, sets direction and executive alignment.',
+};
+const SYSTEM = `You are an expert HR and talent development specialist at Atlan, a high-growth AI-native data catalog company.
+Atlan values: Bias for Action, Giving 120%, Never Be Satisfied, Be Straightforward, Problem First Solution Second, One Team.
+Craft Skills grids are ADD-ONS to Atlan's existing core competency grid (Scope, Autonomy, Impact, Outcome Ownership, Communication, Problem Solving, Leading Through Values, Team & Talent Development). They capture the 3–5 competencies UNIQUE to a specific function.
+Write with precision. Use concrete, observable, role-specific language. No generic HR platitudes.`;
+
+let comps = [];
+let selectedLevels = new Set(['P3','P4','P5']);
+let mode = 'own';
+let compIdCtr = 0;
+
+function init() {
+  renderLevels();
+  addComp('',''); addComp('',''); addComp('','');
+}
+
+function setMode(m) {
+  mode = m;
+  document.getElementById('modeOwnBtn').classList.toggle('active', m==='own');
+  document.getElementById('modeJdBtn').classList.toggle('active', m==='jd');
+  document.getElementById('jdPanel').classList.toggle('visible', m==='jd');
+}
+
+async function suggestComps() {
+  const jd = document.getElementById('jdInput').value.trim();
+  const fn = document.getElementById('fnInput').value.trim();
+  if (!jd) return showError('Paste a job description first.');
+  hideError();
+  const btn = document.getElementById('suggestBtn');
+  const sp = document.getElementById('suggestSpinner');
+  const bt = document.getElementById('suggestBtnText');
+  btn.disabled = true; sp.style.display = 'block'; bt.textContent = 'Analysing JD…';
+  try {
+    const prompt = `Based on this job description for ${fn||'the role'} at Atlan, identify 3–5 craft competencies UNIQUE to this function — skills beyond Atlan's core grid (Scope, Autonomy, Impact, Outcome Ownership, Communication, Problem Solving, Leading Through Values, Team & Talent Development).
+
+Job description:
+${jd}
+
+Return ONLY valid JSON, no markdown:
+{ "competencies": [ { "name": "Short name (2-4 words)", "desc": "One sentence: what this means for this specific role" }, ... ] }
+
+Rules: 3–5 competencies only. Each must be genuinely function-specific. Names crisp, descriptions concrete.`;
+
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:800, system:SYSTEM, messages:[{role:'user',content:prompt}] })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message||'API error');
+    const parsed = JSON.parse(data.content.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim());
+    comps = [];
+    for (const c of parsed.competencies) addComp(c.name, c.desc);
+    document.getElementById('selfPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+  } catch(e) {
+    showError('Could not generate suggestions: '+e.message);
+  } finally {
+    btn.disabled=false; sp.style.display='none'; bt.textContent='✦ Suggest competencies from JD';
+  }
+}
+
+function addComp(name='', desc='') {
+  const id = ++compIdCtr;
+  comps.push({id,name,desc});
+  renderComps();
+}
+
+function removeComp(id) {
+  comps = comps.filter(c=>c.id!==id);
+  renderComps();
+}
+
+function renderComps() {
+  const valid = comps.filter(c=>c.name.trim()).length;
+  const countEl = document.getElementById('compCount');
+  countEl.textContent = `${valid} / 5`;
+  countEl.className = 'comp-count'+(valid>=3&&valid<=5?' ok':'');
+  document.getElementById('compList').innerHTML = comps.map(c=>`
+    <div class="comp-row">
+      <div class="comp-input-wrap">
+        <input type="text" placeholder="Competency name…" value="${esc(c.name)}" oninput="updateComp(${c.id},'name',this.value)" />
+        <textarea class="comp-desc-input" placeholder="What does this mean for this function? (optional)" oninput="updateComp(${c.id},'desc',this.value)">${esc(c.desc)}</textarea>
+      </div>
+      <button class="comp-remove" onclick="removeComp(${c.id})">×</button>
+    </div>
+  `).join('');
+}
+
+function updateComp(id, field, val) {
+  const c = comps.find(x=>x.id===id);
+  if (c) c[field] = val;
+  const valid = comps.filter(c=>c.name.trim()).length;
+  const countEl = document.getElementById('compCount');
+  countEl.textContent = `${valid} / 5`;
+  countEl.className = 'comp-count'+(valid>=3&&valid<=5?' ok':'');
+}
+
+function renderLevels() {
+  document.getElementById('levelsGrid').innerHTML = ALL_LEVELS.map(l=>`
+    <label class="level-check ${selectedLevels.has(l.code)?'selected':''}" id="lc-${l.code}" onclick="toggleLevel('${l.code}')">
+      <input type="checkbox" ${selectedLevels.has(l.code)?'checked':''}/>
+      <span class="level-label">${l.code}</span>
+    </label>
+  `).join('');
+}
+
+function toggleLevel(code) {
+  const el = document.getElementById('lc-'+code);
+  if (selectedLevels.has(code)) { selectedLevels.delete(code); el.classList.remove('selected'); }
+  else { selectedLevels.add(code); el.classList.add('selected'); }
+}
+
+async function generate() {
+  const fn = document.getElementById('fnInput').value.trim();
+  const ctx = document.getElementById('ctxInput').value.trim();
+  const validComps = comps.filter(c=>c.name.trim());
+  const levels = [...selectedLevels].sort((a,b)=>ALL_LEVELS.findIndex(x=>x.code===a)-ALL_LEVELS.findIndex(x=>x.code===b));
+  if (!fn) return showError('Enter a function or team name.');
+  if (validComps.length===0) return showError('Add at least one competency.');
+  if (levels.length===0) return showError('Select at least one level.');
+  hideError(); setLoading(true);
+  renderShell(fn, ctx, validComps, levels);
+  try { await fillCells(fn, ctx, validComps, levels); }
+  catch(e) { showError('Generation failed: '+e.message); }
+  finally { setLoading(false); }
+}
+
+function renderShell(fn, ctx, validComps, levels) {
+  const headers = levels.map(code=>{
+    const l = ALL_LEVELS.find(x=>x.code===code);
+    return `<th class="th-level"><div class="th-level-code">${l.code}</div><div class="th-level-name">${l.name}</div></th>`;
+  }).join('');
+  const rows = validComps.map((comp,ci)=>{
+    const cells = levels.map(code=>`
+      <td class="td-cell" id="cell-${ci}-${code}">
+        <div class="cell-loading"><div class="cell-spinner"></div><span>Writing…</span></div>
+      </td>`).join('');
+    return `<tr><td class="td-competency"><div class="comp-name">${esc(comp.name)}</div>${comp.desc?`<div class="comp-hint">${esc(comp.desc)}</div>`:''}</td>${cells}</tr>`;
+  }).join('');
+  document.getElementById('mainArea').innerHTML = `
+    <div class="grid-wrap">
+      <div class="grid-eyebrow">Craft Skills Grid</div>
+      <div class="grid-title">${esc(fn)} <em>Competencies</em></div>
+      ${ctx?`<div class="grid-subtitle">${esc(ctx)}</div>`:'<div style="margin-bottom:24px"></div>'}
+      <table class="craft-grid">
+        <thead><tr><th class="th-competency"><div class="th-competency-label">Competency</div></th>${headers}</tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="grid-actions">
+        <button class="btn-ghost" onclick="window.print()">Print / PDF</button>
+        <button class="btn-ghost" onclick="copyGrid()">Copy as text</button>
+      </div>
+    </div>`;
+}
+
+async function fillCells(fn, ctx, validComps, levels) {
+  const levelLines = levels.map(code=>`${code}: ${LEVEL_CTX[code]}`).join('\n');
+
+  // Fire one call per competency row — cells populate progressively
+  await Promise.all(validComps.map(async (comp, ci) => {
+    const prompt = `Write descriptions for the "${comp.name}" craft competency${comp.desc ? ` (${comp.desc})` : ''} for a ${fn} at Atlan.
+${ctx ? `Team context: ${ctx}\n` : ''}
+Level context:
+${levelLines}
+
+For each level write 2–3 sentences that are:
+- Specific to what a ${fn} actually does in "${comp.name}" at that seniority
+- Observable and behavioral
+- Clearly calibrated to level (P1 must feel unmistakably different from P4)
+- Written in Atlan's voice: direct, high-bar, no filler phrases
+
+Return ONLY valid JSON, no markdown:
+{ "cells": [ { "level": "P3", "text": "..." }, ... ] }
+
+Cover these levels: ${levels.join(', ')}.`;
+
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:2000, system:SYSTEM, messages:[{role:'user',content:prompt}] })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error?.message||'API error');
+      const parsed = JSON.parse(data.content.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim());
+      for (const cell of parsed.cells) {
+        const el = document.getElementById(`cell-${ci}-${cell.level}`);
+        if (el) el.innerHTML = `<div class="cell-text">${esc(cell.text)}</div>`;
+      }
+    } catch(e) {
+      // Mark failed cells
+      levels.forEach(code => {
+        const el = document.getElementById(`cell-${ci}-${code}`);
+        if (el && el.querySelector('.cell-loading')) {
+          el.innerHTML = `<span style="color:var(--text3);font-size:11px;">Error — try regenerating</span>`;
+        }
+      });
+    }
+  }));
+
+  // Clear any remaining spinners
+  document.querySelectorAll('.cell-loading').forEach(el=>{
+    el.innerHTML = '<span style="color:var(--text3);font-size:11px;font-style:italic;">—</span>';
+  });
+}
+
+function setLoading(on) {
+  document.getElementById('genBtn').disabled = on;
+  document.getElementById('spinner').style.display = on?'block':'none';
+  document.getElementById('btnText').textContent = on?'Generating…':'Generate Grid';
+}
+function showError(msg) { const e=document.getElementById('errorMsg'); e.textContent=msg; e.style.display='block'; }
+function hideError() { document.getElementById('errorMsg').style.display='none'; }
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function copyGrid() {
+  const t = document.querySelector('.craft-grid');
+  if (!t) return;
+  const rows = [...t.querySelectorAll('tr')].map(tr=>
+    [...tr.querySelectorAll('th,td')].map(c=>c.innerText.replace(/\n/g,' ').trim()).join('\t')
+  );
+  navigator.clipboard.writeText(rows.join('\n')).then(()=>alert('Copied! Paste into Notion or Google Sheets.'));
+}
+
+init();
+</script>
+</body>
+</html>
