@@ -25,10 +25,38 @@
 body { font-family: 'Geist', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
 
 /* HEADER */
-header { display: flex; align-items: center; padding: 16px 36px; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 0; z-index: 100; gap: 12px; box-shadow: 0 1px 0 var(--border); }
-.wordmark-main { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 300; color: var(--text); letter-spacing: -0.01em; }
+header { display: flex; align-items: center; padding: 0 36px; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 0; z-index: 100; gap: 20px; box-shadow: 0 1px 0 var(--border); height: 53px; }
+.wordmark-main { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 300; color: var(--text); letter-spacing: -0.01em; white-space: nowrap; }
 .wordmark-main span { font-style: italic; color: var(--accent); }
-.wordmark-sub { font-family: 'Geist Mono', monospace; font-size: 10px; color: var(--text3); letter-spacing: 0.12em; text-transform: uppercase; }
+.wordmark-sub { font-family: 'Geist Mono', monospace; font-size: 10px; color: var(--text3); letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap; }
+.header-divider { width: 1px; height: 20px; background: var(--border); flex-shrink: 0; }
+.tab-nav { display: flex; gap: 0; height: 100%; }
+.tab-btn { padding: 0 18px; background: none; border: none; border-bottom: 2px solid transparent; font-family: 'Geist', sans-serif; font-size: 13px; font-weight: 500; color: var(--text3); cursor: pointer; transition: all 0.15s; height: 100%; display: flex; align-items: center; gap: 7px; white-space: nowrap; }
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+.repo-panel { display: none; padding: 32px 36px 60px; }
+.repo-panel.visible { display: block; }
+.repo-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+.repo-title { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 300; }
+.repo-title em { font-style: italic; color: var(--accent); }
+.repo-search { padding: 8px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 7px; font-family: 'Geist', sans-serif; font-size: 13px; color: var(--text); outline: none; width: 240px; transition: border-color 0.15s; }
+.repo-search:focus { border-color: var(--accent); }
+.repo-search::placeholder { color: var(--text3); }
+.repo-empty { text-align: center; padding: 60px 20px; color: var(--text3); }
+.repo-empty-glyph { font-family: 'Fraunces', serif; font-size: 48px; font-weight: 300; font-style: italic; color: var(--border2); margin-bottom: 12px; }
+.repo-empty-label { font-size: 13px; line-height: 1.6; }
+.repo-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.repo-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; cursor: pointer; transition: all 0.15s; }
+.repo-card:hover { border-color: var(--accent); box-shadow: 0 2px 12px rgba(212,81,30,0.08); }
+.repo-card-fn { font-weight: 600; font-size: 14px; color: var(--text); margin-bottom: 4px; }
+.repo-card-meta { font-size: 11px; color: var(--text3); font-family: 'Geist Mono', monospace; margin-bottom: 10px; letter-spacing: 0.04em; }
+.repo-card-comps { display: flex; flex-wrap: wrap; gap: 5px; }
+.repo-chip { font-size: 10.5px; padding: 3px 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 20px; color: var(--text2); }
+.repo-card-date { font-size: 11px; color: var(--text3); margin-top: 10px; }
+.save-btn { padding: 8px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 7px; font-family: 'Geist', sans-serif; font-size: 12px; color: var(--text2); cursor: pointer; transition: all 0.15s; display: none; align-items: center; gap: 6px; }
+.save-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.save-btn.visible { display: flex; }
+.save-btn.saved { color: #2a7a4a; border-color: #a8d4b8; background: #edf5f0; pointer-events: none; }
 
 /* LAYOUT */
 .app { display: grid; grid-template-columns: 360px 1fr; min-height: calc(100vh - 53px); }
@@ -141,29 +169,29 @@ textarea { resize: vertical; line-height: 1.55; }
 .empty-label { font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); }
 
 /* GRID */
-.grid-wrap { padding: 32px 36px 60px; min-width: max-content; animation: fadeIn 0.3s ease both; }
+.grid-wrap { padding: 32px 36px 60px; animation: fadeIn 0.3s ease both; }
 @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
 .grid-eyebrow { font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
 .grid-title { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 300; letter-spacing: -0.02em; color: var(--text); }
 .grid-title em { font-style: italic; color: var(--accent); }
 .grid-subtitle { font-size: 13px; color: var(--text2); margin-top: 5px; margin-bottom: 24px; }
 
-.craft-grid { border-collapse: collapse; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.craft-grid { border-collapse: collapse; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); width: 100%; table-layout: fixed; }
 
-.th-competency { width: 190px; min-width: 190px; padding: 14px 16px; text-align: left; background: var(--surface2); border: 1px solid var(--border); }
+.th-competency { width: 160px; padding: 14px 16px; text-align: left; background: var(--surface2); border: 1px solid var(--border); }
 .th-competency-label { font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); }
 
-.th-level { min-width: var(--level-w); padding: 13px 16px; text-align: left; background: var(--surface); border: 1px solid var(--border); }
+.th-level { padding: 13px 16px; text-align: left; background: var(--surface); border: 1px solid var(--border); }
 .th-level-code { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 300; font-style: italic; color: var(--accent); line-height: 1; margin-bottom: 2px; }
 .th-level-name { font-size: 11px; color: var(--text3); line-height: 1.3; }
 
-.td-competency { padding: 16px; border: 1px solid var(--border); vertical-align: top; background: var(--surface2); width: 190px; min-width: 190px; }
+.td-competency { padding: 16px; border: 1px solid var(--border); vertical-align: top; background: var(--surface2); width: 160px; word-wrap: break-word; }
 .comp-name { font-weight: 600; font-size: 13px; color: var(--text); margin-bottom: 3px; line-height: 1.3; }
 .comp-hint { font-size: 11px; color: var(--text3); line-height: 1.5; }
 
-.td-cell { padding: 15px 16px; border: 1px solid var(--border); vertical-align: top; min-width: var(--level-w); background: var(--surface); transition: background 0.12s; }
+.td-cell { padding: 15px 16px; border: 1px solid var(--border); vertical-align: top; background: var(--surface); transition: background 0.12s; word-wrap: break-word; overflow-wrap: break-word; }
 .td-cell:hover { background: #fdfcfa; }
-.cell-text { font-size: 12.5px; color: var(--text2); line-height: 1.75; }
+.cell-text { font-size: 12.5px; color: var(--text2); line-height: 1.75; white-space: normal; }
 .cell-loading { display: flex; align-items: center; gap: 8px; color: var(--text3); font-size: 12px; }
 .cell-spinner { width: 12px; height: 12px; border: 1.5px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.65s linear infinite; }
 
@@ -184,9 +212,17 @@ textarea { resize: vertical; line-height: 1.55; }
 <header>
   <div class="wordmark-main">Atlan <span>Craft</span></div>
   <div class="wordmark-sub">Skills Grid Generator</div>
+  <div class="header-divider"></div>
+  <nav class="tab-nav">
+    <button class="tab-btn active" id="tabGen" onclick="switchTab('generator')">⚡ Generator</button>
+    <button class="tab-btn" id="tabRepo" onclick="switchTab('repository')">📁 Repository</button>
+  </nav>
+  <div style="margin-left:auto;">
+    <button class="save-btn" id="saveBtn" onclick="saveGrid()">💾 Save to Repository</button>
+  </div>
 </header>
 
-<div class="app">
+<div class="app" id="generatorPanel">
   <aside class="sidebar">
     <div class="sidebar-title">Build a <em>Craft Skills</em> Grid</div>
     <p class="sidebar-desc">Define the 3–5 competencies unique to this function — on top of Atlan's core grid. The tool writes per-level descriptions.</p>
@@ -217,7 +253,7 @@ textarea { resize: vertical; line-height: 1.55; }
     <div class="jd-panel" id="jdPanel">
       <div class="field-group">
         <label class="field-label">Paste job description</label>
-        <textarea id="jdInput" style="min-height:130px" placeholder="Paste the full job description here…"></textarea>
+        <textarea id="jdInput" style="min-height:130px" placeholder="Don't have a job description? Paste in whatever content best describes this function — a role brief, a team charter, a Notion doc, even a few bullet points."></textarea>
       </div>
       <button class="suggest-btn" id="suggestBtn" onclick="suggestComps()">
         <div class="suggest-spinner" id="suggestSpinner"></div>
@@ -258,6 +294,23 @@ textarea { resize: vertical; line-height: 1.55; }
       <div class="empty-label">Define competencies to get started</div>
     </div>
   </main>
+</div>
+
+<!-- REPOSITORY PANEL -->
+<div class="repo-panel" id="repositoryPanel">
+  <div class="repo-header">
+    <div class="repo-title">Saved <em>Grids</em></div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <input class="repo-search" type="text" id="repoSearch" placeholder="Search by function…" oninput="filterRepo(this.value)" />
+      <a href="/api/export-csv" class="btn-ghost" style="text-decoration:none;padding:8px 14px;font-size:12px;">⬇ Export CSV</a>
+    </div>
+  </div>
+  <div id="repoContent">
+    <div class="repo-empty">
+      <div class="repo-empty-glyph">∅</div>
+      <div class="repo-empty-label">Loading saved grids…</div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -323,13 +376,16 @@ Return ONLY valid JSON, no markdown:
 
 Rules: 3–5 competencies only. Each must be genuinely function-specific. Names crisp, descriptions concrete.`;
 
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('/api/ai', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:800, system:SYSTEM, messages:[{role:'user',content:prompt}] })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error?.message||'API error');
-    const parsed = JSON.parse(data.content.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim());
+    const raw = data.content.map(b=>b.text||'').join('');
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON found in response');
+    const parsed = JSON.parse(jsonMatch[0]);
     comps = [];
     for (const c of parsed.competencies) addComp(c.name, c.desc);
     document.getElementById('selfPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -378,10 +434,9 @@ function updateComp(id, field, val) {
 
 function renderLevels() {
   document.getElementById('levelsGrid').innerHTML = ALL_LEVELS.map(l=>`
-    <label class="level-check ${selectedLevels.has(l.code)?'selected':''}" id="lc-${l.code}" onclick="toggleLevel('${l.code}')">
-      <input type="checkbox" ${selectedLevels.has(l.code)?'checked':''}/>
+    <div class="level-check ${selectedLevels.has(l.code)?'selected':''}" id="lc-${l.code}" onclick="toggleLevel('${l.code}')">
       <span class="level-label">${l.code}</span>
-    </label>
+    </div>
   `).join('');
 }
 
@@ -456,13 +511,17 @@ Return ONLY valid JSON, no markdown:
 Cover these levels: ${levels.join(', ')}.`;
 
     try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
+      const res = await fetch('/api/ai', {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:2000, system:SYSTEM, messages:[{role:'user',content:prompt}] })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error?.message||'API error');
-      const parsed = JSON.parse(data.content.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim());
+      const raw = data.content.map(b=>b.text||'').join('');
+      // Extract JSON more robustly - find the outermost { } block
+      const jsonMatch = raw.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error('No JSON found in response');
+      const parsed = JSON.parse(jsonMatch[0]);
       for (const cell of parsed.cells) {
         const el = document.getElementById(`cell-${ci}-${cell.level}`);
         if (el) el.innerHTML = `<div class="cell-text">${esc(cell.text)}</div>`;
@@ -502,6 +561,154 @@ function copyGrid() {
 }
 
 init();
+
+// ── TAB SWITCHING ──
+function switchTab(tab) {
+  const isRepo = tab === 'repository';
+  document.getElementById('generatorPanel').style.display = isRepo ? 'none' : 'grid';
+  document.getElementById('repositoryPanel').classList.toggle('visible', isRepo);
+  document.getElementById('tabGen').classList.toggle('active', !isRepo);
+  document.getElementById('tabRepo').classList.toggle('active', isRepo);
+  if (isRepo) loadRepository();
+}
+
+// ── SAVE GRID ──
+// Store current grid state for saving
+let currentGridState = null;
+
+// Override renderShell to track state
+const _origRenderShell = renderShell;
+renderShell = function(fn, ctx, validComps, levels) {
+  currentGridState = { fn, ctx, validComps, levels, cells: {} };
+  document.getElementById('saveBtn').classList.remove('visible', 'saved');
+  _origRenderShell(fn, ctx, validComps, levels);
+};
+
+// Override fillCells to capture cell data
+const _origFillCells = fillCells;
+fillCells = async function(fn, ctx, validComps, levels) {
+  await _origFillCells(fn, ctx, validComps, levels);
+  // Capture rendered cell text into state
+  if (currentGridState) {
+    validComps.forEach((comp, ci) => {
+      levels.forEach(code => {
+        const el = document.getElementById(`cell-${ci}-${code}`);
+        if (el) {
+          const textEl = el.querySelector('.cell-text');
+          if (textEl) {
+            if (!currentGridState.cells[ci]) currentGridState.cells[ci] = {};
+            currentGridState.cells[ci][code] = textEl.innerText;
+          }
+        }
+      });
+    });
+    document.getElementById('saveBtn').classList.add('visible');
+  }
+};
+
+async function saveGrid() {
+  if (!currentGridState) return;
+  const btn = document.getElementById('saveBtn');
+  btn.textContent = '⏳ Saving…';
+  btn.style.pointerEvents = 'none';
+
+  try {
+    const res = await fetch('/api/save-grid', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fn: currentGridState.fn,
+        context: currentGridState.ctx,
+        levels: currentGridState.levels,
+        competencies: currentGridState.validComps,
+        gridData: currentGridState.cells,
+      })
+    });
+    if (!res.ok) throw new Error('Save failed');
+    btn.textContent = '✓ Saved';
+    btn.classList.add('saved');
+  } catch(e) {
+    btn.textContent = '💾 Save to Repository';
+    btn.style.pointerEvents = '';
+    alert('Could not save: ' + e.message);
+  }
+}
+
+// ── REPOSITORY ──
+let allGrids = [];
+
+async function loadRepository() {
+  const content = document.getElementById('repoContent');
+  content.innerHTML = `<div class="repo-empty"><div class="repo-empty-glyph">⟳</div><div class="repo-empty-label">Loading…</div></div>`;
+  try {
+    const res = await fetch('/api/load-grids');
+    const data = await res.json();
+    allGrids = data.grids || [];
+    renderRepoCards(allGrids);
+  } catch(e) {
+    content.innerHTML = `<div class="repo-empty"><div class="repo-empty-label">Could not load grids. Check your connection.</div></div>`;
+  }
+}
+
+function filterRepo(query) {
+  const q = query.toLowerCase();
+  const filtered = allGrids.filter(g =>
+    g.fn.toLowerCase().includes(q) ||
+    g.competencies.some(c => c.toLowerCase().includes(q))
+  );
+  renderRepoCards(filtered);
+}
+
+function renderRepoCards(grids) {
+  const content = document.getElementById('repoContent');
+  if (!grids.length) {
+    content.innerHTML = `
+      <div class="repo-empty">
+        <div class="repo-empty-glyph">cf.</div>
+        <div class="repo-empty-label">No grids saved yet.<br>Generate one and hit "Save to Repository".</div>
+      </div>`;
+    return;
+  }
+  content.innerHTML = `<div class="repo-cards">${grids.map(g => `
+    <div class="repo-card" onclick="openSavedGrid(${g.id})">
+      <div class="repo-card-fn">${esc(g.fn)}</div>
+      <div class="repo-card-meta">${g.levels.join(' · ')}</div>
+      <div class="repo-card-comps">
+        ${g.competencies.map(c => `<span class="repo-chip">${esc(c)}</span>`).join('')}
+      </div>
+      <div class="repo-card-date">${esc(g.date)}</div>
+    </div>
+  `).join('')}</div>`;
+}
+
+function openSavedGrid(id) {
+  const grid = allGrids.find(g => g.id === id);
+  if (!grid) return;
+
+  // Switch to generator tab and render the saved grid
+  switchTab('generator');
+
+  const levels = grid.levels;
+  const validComps = grid.competencies.map(name => ({ name, desc: '' }));
+
+  renderShell(grid.fn, grid.context, validComps, levels);
+
+  // Populate cells from saved data
+  validComps.forEach((comp, ci) => {
+    levels.forEach(code => {
+      const el = document.getElementById(`cell-${ci}-${code}`);
+      if (el) {
+        const savedText = grid.gridData?.[ci]?.[code] || '—';
+        el.innerHTML = `<div class="cell-text">${esc(savedText)}</div>`;
+      }
+    });
+  });
+
+  // Mark as already saved
+  const btn = document.getElementById('saveBtn');
+  btn.textContent = '✓ Saved';
+  btn.classList.add('visible', 'saved');
+}
 </script>
 </body>
 </html>
